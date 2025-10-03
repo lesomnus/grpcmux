@@ -30,6 +30,9 @@ func main() {
 
 			next.ServeHTTP(w, r)
 		}
+		grpcmux.WithHttpHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Your HTTP handler here.	
+		})),
 	))
 
 	listener, err := net.Listen("tcp", ":15300")
