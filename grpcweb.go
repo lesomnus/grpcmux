@@ -38,7 +38,7 @@ func (m grpcWebHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if is_proto_text {
-		w_ := grpcWebTextResponseWriter{ResponseWriter: w}
+		w_ := &grpcWebTextResponseWriter{ResponseWriter: w}
 		w_.reset()
 		w = w_
 
@@ -158,19 +158,19 @@ type grpcWebTextResponseWriter struct {
 	encoder io.WriteCloser
 }
 
-func (w grpcWebTextResponseWriter) reset() {
+func (w *grpcWebTextResponseWriter) reset() {
 	w.encoder = base64.NewEncoder(base64.StdEncoding, w.ResponseWriter)
 }
 
-func (w grpcWebTextResponseWriter) Write(b []byte) (int, error) {
+func (w *grpcWebTextResponseWriter) Write(b []byte) (int, error) {
 	return w.encoder.Write(b)
 }
 
-func (w grpcWebTextResponseWriter) WriteHeader(code int) {
+func (w *grpcWebTextResponseWriter) WriteHeader(code int) {
 	w.ResponseWriter.WriteHeader(code)
 }
 
-func (w grpcWebTextResponseWriter) Flush() {
+func (w *grpcWebTextResponseWriter) Flush() {
 	// Flush the base64 encoder by closing it. Grpc-web permits multiple padded base64 parts:
 	// https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md
 	err := w.encoder.Close()
